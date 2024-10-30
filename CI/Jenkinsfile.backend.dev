@@ -11,8 +11,8 @@ pipeline {
 
         stage('Test'){
             steps{
-                sh 'echo ${env.GIT_COMMIT}'
-                sh 'echo ${env.GIT_BRANCH}'
+                sh 'echo ${GIT_COMMIT}'
+                sh 'echo ${GIT_BRANCH}'
             }
         }
 
