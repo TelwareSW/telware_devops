@@ -8,6 +8,14 @@ pipeline {
     }
 
     stages {
+
+        stage('Test'){
+            steps{
+                sh 'echo ${env.GIT_COMMIT}'
+                sh 'echo ${env.GIT_BRANCH}'
+            }
+        }
+
         stage('Checkout') {
             steps {
                 script {
