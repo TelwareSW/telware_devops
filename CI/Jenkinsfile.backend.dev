@@ -4,17 +4,19 @@ pipeline {
     environment {
         GITHUB_CREDENTIALS_ID = 'PersonalAccessTokenUser'
         DOCKER_CREDENTIALS_ID = 'DockerHubPassword' 
-        DOCKER_IMAGE = '299shehab299/telware-backend:dev_latest' 
+        DOCKER_IMAGE = '299shehab299/telware-backend'
+        TAG = 'latest_dev'
+        OTHER_TAG = 'develop_{GIT_COMMIT}' 
     }
 
     stages {
 
-        stage('Test'){
-            steps{
-                sh 'echo ${GIT_COMMIT}'
-                sh 'echo ${GIT_BRANCH}'
-            }
-        }
+        // stage('Test'){
+        //     steps{
+        //         sh 'echo ${GIT_COMMIT}'
+        //         sh 'echo ${GIT_BRANCH}'
+        //     }
+        // }
 
         stage('Checkout') {
             steps {
@@ -42,7 +44,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){ 
                     sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
                     sh 'sudo docker tag  telware-backend ${DOCKER_IMAGE}'
-                    sh 'sudo docker push ${DOCKER_IMAGE}'
+                    sh 'sudo docker push ${DOCKER_IMAGE}:${TAG}'
+                    sh 'sudo docker push ${DOCKER_IMAGE}:${OTHER_TAG}'
                 }
             }
         }
