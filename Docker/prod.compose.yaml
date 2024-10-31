@@ -1,0 +1,63 @@
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+    networks:
+      - backend-net
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
+      interval: 1m
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  backend:
+    image: 299shehab299/telware-backend:latest
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-3000}
+    restart: always
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend-net
+
+  redis:
+    image: redis/redis-stack
+    restart: unless-stopped
+    networks:
+      - backend-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20m
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+  frontend:
+    image: 299shehab299/telware-frontend:latest
+    ports:
+      - 80:80
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}    
+    restart: always
+    depends_on:
+      - backend
+    
+
+networks:
+  backend-net:
+
+volumes:
+  mongo-data:

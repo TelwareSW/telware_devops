@@ -27,7 +27,7 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -f prod.Dockerfile -t telware-backend .'
+                sh 'sudo docker build -f prod.Dockerfile -t telware-backend-prod .'
             }
         }
         
@@ -35,9 +35,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){ 
                     sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
-                    sh 'sudo docker tag  telware-backend ${DOCKER_IMAGE}:${TAG}'
+                    sh 'sudo docker tag  telware-backend-prod ${DOCKER_IMAGE}:${TAG}'
                     sh 'sudo docker push ${DOCKER_IMAGE}:${TAG}'
-                    sh 'sudo docker tag  telware-backend ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
+                    sh 'sudo docker tag  telware-backend-prod ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
                     sh 'sudo docker push ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
                 }
             }
@@ -45,9 +45,29 @@ pipeline {
 
         stage('Clean'){
             steps{
-                sh 'sudo docker rmi -f telware-backend'
+                sh 'sudo docker rmi -f telware-backend-prod'
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:${TAG}'
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
+            }
+        }
+
+        stage('Deploy'){
+            steps{
+                script{
+                    checkout scmGit(
+                        branches: [[name: 'main']],
+                        extensions: [],
+                        userRemoteConfigs: [[
+                            credentialsId: "${GITHUB_CREDENTIALS_ID}",
+                            url: 'https://github.com/TelwareSW/telware_devops.git'
+                        ]]
+                    )
+                }
+
+                dir('Docker'){
+                    sh 'sudo docker-compose -f prod.compose.yaml down'
+                    sh 'sudo docker-compose -f prod.compose.yaml up -d'
+                }
             }
         }
         

@@ -28,7 +28,7 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -f dev.Dockerfile -t telware-backend .'
+                sh 'sudo docker build -f dev.Dockerfile -t telware-backend-dev .'
             }
         }
         
@@ -36,9 +36,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){ 
                     sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
-                    sh 'sudo docker tag  telware-backend ${DOCKER_IMAGE}:${TAG}'
+                    sh 'sudo docker tag  telware-backend-dev ${DOCKER_IMAGE}:${TAG}'
                     sh 'sudo docker push ${DOCKER_IMAGE}:${TAG}'
-                    sh 'sudo docker tag  telware-backend ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
+                    sh 'sudo docker tag  telware-backend-dev ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
                     sh 'sudo docker push ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
                 }
             }
@@ -46,7 +46,7 @@ pipeline {
 
         stage('Clean'){
             steps{
-                sh 'sudo docker rmi -f telware-backend'
+                sh 'sudo docker rmi -f telware-backend-dev'
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:${TAG}'
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
             }

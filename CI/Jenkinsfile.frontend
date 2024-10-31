@@ -52,6 +52,26 @@ pipeline {
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
             }
         }
+
+        stage('Deploy'){
+            steps{
+                script{
+                    checkout scmGit(
+                        branches: [[name: 'main']],
+                        extensions: [],
+                        userRemoteConfigs: [[
+                            credentialsId: "${GITHUB_CREDENTIALS_ID}",
+                            url: 'https://github.com/TelwareSW/telware_devops.git'
+                        ]]
+                    )
+                }
+
+                dir('Docker'){
+                    sh 'sudo docker-compose -f prod.compose.yaml down'
+                    sh 'sudo docker-compose -f prod.compose.yaml up -d'
+                }
+            }
+        }
         
     }
 }
