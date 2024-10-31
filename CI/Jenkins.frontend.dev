@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+    
+    environment {
+        GITHUB_CREDENTIALS_ID = 'PersonalAccessTokenUser'
+        DOCKER_CREDENTIALS_ID = 'DockerHubPassword' 
+        DOCKER_IMAGE = '299shehab299/telware-frontend'
+        TAG = 'latest_dev'
+    }
+
+    stages {
+
+
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout scmGit(
+                        branches: [[name: 'dev']],
+                        extensions: [],
+                        userRemoteConfigs: [[
+                            credentialsId: "${GITHUB_CREDENTIALS_ID}",
+                            url: 'https://github.com/TelwareSW/telware-frontend.git'
+                        ]]
+                    )
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                sh 'sudo docker build -f ./app/dev.Dockerfile -t telware-frontend .'
+            }
+        }
+        
+        stage('Push To DockerHub'){
+            steps {
+                withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){ 
+                    sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
+                    sh 'sudo docker tag  telware-frontend ${DOCKER_IMAGE}:${TAG}'
+                    sh 'sudo docker push ${DOCKER_IMAGE}:${TAG}'
+                    sh 'sudo docker tag  telware-frontend ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
+                    sh 'sudo docker push ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
+                }
+            }
+        }
+
+        stage('Clean'){
+            steps{
+                sh 'sudo docker rmi -f telware-frontend'
+                sh 'sudo docker rmi -f ${DOCKER_IMAGE}:${TAG}'
+                sh 'sudo docker rmi -f ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
+            }
+        }
+        
+        
+    }
+}
