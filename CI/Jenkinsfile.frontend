@@ -27,9 +27,9 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                sh 'cd app'
-                sh 'sudo docker build -f prod.Dockerfile -t telware-frontend .'
-                sh 'cd ..'
+                dir('app'){
+                    sh 'sudo docker build -f prod.Dockerfile -t telware-frontend-prod .'
+                }
             }
         }
         
@@ -37,9 +37,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){ 
                     sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
-                    sh 'sudo docker tag  telware-frontend ${DOCKER_IMAGE}:${TAG}'
+                    sh 'sudo docker tag  telware-frontend-prod ${DOCKER_IMAGE}:${TAG}'
                     sh 'sudo docker push ${DOCKER_IMAGE}:${TAG}'
-                    sh 'sudo docker tag  telware-frontend ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
+                    sh 'sudo docker tag  telware-frontend-prod ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
                     sh 'sudo docker push ${DOCKER_IMAGE}:prod_${GIT_COMMIT}'
                 }
             }
