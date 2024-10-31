@@ -28,7 +28,9 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -f ./app/dev.Dockerfile -t telware-frontend .'
+                sh 'cd app'
+                sh 'sudo docker build -f dev.Dockerfile -t telware-frontend .'
+                sh 'cd ..'
             }
         }
         
