@@ -66,7 +66,7 @@ pipeline {
 
                     dir('Docker') {
                         withCredentials([file(credentialsId: 'frontend.env', variable: 'FRONTEND_ENV_FILE'),
-                                         file(credentialsId: 'backend.env', variable: 'BACKEND_ENV_FILE')]) {
+                                         file(credentialsId: 'backend_env', variable: 'BACKEND_ENV_FILE')]) {
                             sh 'sudo docker-compose --env-file $FRONTEND_ENV_FILE --env-file $BACKEND_ENV_FILE -f prod.compose.yaml down'  
                             sh 'sudo docker-compose --env-file $FRONTEND_ENV_FILE --env-file $BACKEND_ENV_FILE -f prod.compose.yaml up -d'
                         }
