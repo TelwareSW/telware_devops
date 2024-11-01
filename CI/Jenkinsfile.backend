@@ -27,7 +27,7 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -f prod.Dockerfile -t telware-backend-prod .'
+                sh 'sudo docker build -f dev.Dockerfile -t telware-backend-prod .'
             }
         }
         
