@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     environment {
-        GITHUB_CREDENTIALS_ID = 'PersonalAccessTokenUser'
+        GITHUB_CREDENTIALS_ID = 'github_token'
         DOCKER_CREDENTIALS_ID = 'DockerHubPassword' 
-        DOCKER_IMAGE = '299shehab299/telware-backend'
+        DOCKER_IMAGE = 'telware/telware-backend'
         TAG = 'latest'
     }
 
