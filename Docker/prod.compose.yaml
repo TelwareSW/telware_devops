@@ -21,9 +21,6 @@ services:
     image: telware/telware-backend:latest
     ports:
       - '${PORT:-3000}:3000'
-    environment:
-      - NODE_ENV=${NODE_ENV:-production}
-      - PORT=${PORT:-3000}
     restart: always
     depends_on:
       mongo:
