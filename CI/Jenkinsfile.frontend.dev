@@ -48,9 +48,9 @@ pipeline {
 
         stage('Clean'){
             steps{
-                sh 'sudo docker rmi -f telware-frontend-dev'
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:${TAG}'
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
+                sh 'sudo docker rmi -f telware-frontend-dev'
             }
         }
         
