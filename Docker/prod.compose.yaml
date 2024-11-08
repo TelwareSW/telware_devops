@@ -18,7 +18,7 @@ services:
       start_period: 45s
 
   backend:
-    image: telware/telware-backend:latest
+    image: telware/telware-backend:latest_dev
     ports:
       - '${PORT:-3000}:3000'
     restart: always
@@ -43,7 +43,7 @@ services:
       start_period: 45s
 
   frontend:
-    image: telware/telware-frontend:latest
+    image: telware/telware-frontend:latest_dev
     ports:
       - 8081:80
     restart: always
