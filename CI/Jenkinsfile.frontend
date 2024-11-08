@@ -29,6 +29,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'front.env', variable: 'ENV_FILE_PATH')]) {
                     dir('app'){
+                        sh 'sudo rm -f .env'
                         sh 'sudo cat $ENV_FILE_PATH > .env'
                     }
                 }
