@@ -25,17 +25,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Add env file') {
-            steps {
-                withCredentials([file(credentialsId: 'front_dev.env', variable: 'ENV_FILE_PATH')]) {
-                    dir('app'){
-                        sh 'sudo rm -f .env'
-                        sh 'sudo cat $ENV_FILE_PATH > .env'
-                    }
-                }
-            }
-        }
         
         stage('Build Docker Image') {
             steps {
@@ -62,25 +51,6 @@ pipeline {
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:${TAG}'
                 sh 'sudo docker rmi -f ${DOCKER_IMAGE}:dev_${GIT_COMMIT}'
                 sh 'sudo docker rmi -f telware-frontend-dev'
-            }
-        }
-
-        stage('Deploy'){
-            steps{
-                script{
-                    checkout scmGit(
-                        branches: [[name: 'main']],
-                        extensions: [],
-                        userRemoteConfigs: [[
-                            credentialsId: "${GITHUB_CREDENTIALS_ID}",
-                            url: 'https://github.com/TelwareSW/telware_devops.git'
-                        ]]
-                }
-            }
-
-            dir('Docker') {
-                sh 'sudo docker compose -f dev.compose.yaml down'  
-                sh 'sudo docker compose -f dev.compose.yaml up -d'
             }
         }
     }
