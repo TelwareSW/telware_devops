@@ -47,4 +47,4 @@ networks:
   telware_dev_net:
 
 volumes:
-  mongo-dev-data:
+  mongo_dev_data:
