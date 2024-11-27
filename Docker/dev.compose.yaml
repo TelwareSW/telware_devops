@@ -4,12 +4,12 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER:-ROOT}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD:-1234}
     networks:
       - telware_dev_net
     volumes:
-      - mongo-dev-data:/data/db
+      - mongo_dev_data:/data/db
     healthcheck:
       test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
       interval: 1m
