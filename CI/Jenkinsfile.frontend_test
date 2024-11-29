@@ -28,8 +28,10 @@ pipeline {
 
         stage('Run tests') {
             steps {
-                sh 'npm install' // Installs dependencies
-                sh 'npm test'    // Runs tests
+                dir('app') {
+                    sh 'npm install'
+                    sh 'npm run test'
+                }
             }
         }
     }
