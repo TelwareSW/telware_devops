@@ -1,8 +1,8 @@
-pipeline{
+pipeline {
     agent any
 
     environment {
-        GITHUB_CREDENTIALS_ID = 'github_token'
+        GITHUB_CREDENTIALS_ID = 'github_token' // Set your GitHub credentials ID
     }
 
     stages {
@@ -13,7 +13,7 @@ pipeline{
                         branches: [[name: 'dev']],
                         extensions: [],
                         userRemoteConfigs: [[
-                            credentialsId: "${GITHUB_CREDENTIALS_ID}",
+                            credentialsId: "${env.GITHUB_CREDENTIALS_ID}", // Use env prefix for clarity
                             url: 'https://github.com/TelwareSW/telware-frontend.git'
                         ]]
                     )
@@ -21,37 +21,36 @@ pipeline{
             }
         }
 
-
-        stage('Run tests'){
+        stage('Run tests') {
             steps {
-                sh 'npm install'
-                sh 'npm test'
+                sh 'npm install' // Installs dependencies
+                sh 'npm test'    // Runs tests
             }
         }
+    }
 
-        post {
-            success {
-                githubCheck(
-                    context: 'Build and Test',
-                    conclusion: 'success',
-                    detailsURL: env.BUILD_URL,
-                    output: [
-                        title: 'Build Passed',
-                        summary: 'All checks passed successfully!'
-                    ]
-                )
-            }
-            failure {
-                githubCheck(
-                    context: 'Build and Test',
-                    conclusion: 'failure',
-                    detailsURL: env.BUILD_URL,
-                    output: [
-                        title: 'Build Failed',
-                        summary: 'Tests failed. Please check the Jenkins logs.'
-                    ]
-                )
-            }
-        }             
+    post {
+        success {
+            githubCheck(
+                context: 'Build and Test',
+                conclusion: 'success',
+                detailsURL: env.BUILD_URL, // Link to the build
+                output: [
+                    title: 'Build Passed',
+                    summary: 'All checks passed successfully!'
+                ]
+            )
+        }
+        failure {
+            githubCheck(
+                context: 'Build and Test',
+                conclusion: 'failure',
+                detailsURL: env.BUILD_URL, // Link to the build
+                output: [
+                    title: 'Build Failed',
+                    summary: 'Tests failed. Please check the Jenkins logs.'
+                ]
+            )
+        }
     }
 }
