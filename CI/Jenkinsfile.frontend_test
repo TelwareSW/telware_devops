@@ -4,6 +4,11 @@ pipeline {
     environment {
         GITHUB_CREDENTIALS_ID = 'github_token' // Set your GitHub credentials ID
     }
+    
+    
+    tools {
+        nodejs 'nodejs' // Name of the Node.js installation in Global Tool Configuration
+    }
 
     stages {
         stage('Checkout') {
