@@ -1,0 +1,57 @@
+pipeline{
+    agent any
+
+    environment {
+        GITHUB_CREDENTIALS_ID = 'github_token'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout scmGit(
+                        branches: [[name: 'dev']],
+                        extensions: [],
+                        userRemoteConfigs: [[
+                            credentialsId: "${GITHUB_CREDENTIALS_ID}",
+                            url: 'https://github.com/TelwareSW/telware-frontend.git'
+                        ]]
+                    )
+                }
+            }
+        }
+
+
+        stage('Run tests'){
+            steps {
+                sh 'npm install'
+                sh 'npm test'
+            }
+        }
+
+        post {
+            success {
+                githubCheck(
+                    context: 'Build and Test',
+                    conclusion: 'success',
+                    detailsURL: env.BUILD_URL,
+                    output: [
+                        title: 'Build Passed',
+                        summary: 'All checks passed successfully!'
+                    ]
+                )
+            }
+            failure {
+                githubCheck(
+                    context: 'Build and Test',
+                    conclusion: 'failure',
+                    detailsURL: env.BUILD_URL,
+                    output: [
+                        title: 'Build Failed',
+                        summary: 'Tests failed. Please check the Jenkins logs.'
+                    ]
+                )
+            }
+        }             
+    }
+}
