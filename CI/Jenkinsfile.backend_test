@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     checkout scmGit(
-                        branches: [[name: 'dev']],
+                        branches: [[name: 'develop']],
                         extensions: [],
                         userRemoteConfigs: [[
                             credentialsId: "${env.GITHUB_CREDENTIALS_ID}", 
