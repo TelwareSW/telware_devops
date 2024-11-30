@@ -70,7 +70,7 @@ pipeline {
             steps{
                 script{
                     checkout scmGit(
-                        branches: [[name: 'dev']],
+                        branches: [[name: 'main']],
                         extensions: [],
                         userRemoteConfigs: [[
                             credentialsId: "${GITHUB_CREDENTIALS_ID}",
