@@ -80,7 +80,7 @@ pipeline {
                 }
 
                 dir('Docker') {
-                    sh 'sudo docker compose -f dev.compose.yaml down'
+                    sh 'sudo docker compose -f dev.compose.yaml down --remove-orphans'
                     sh 'sudo docker compose -f dev.compose.yaml up -d'
                     sh 'sudo docker exec -it docker-backend_dev_1 npm run seed'
                 }
